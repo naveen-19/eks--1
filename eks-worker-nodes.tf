@@ -51,12 +51,35 @@ resource "aws_iam_role_policy_attachment" "demo-node-AmazonEC2ContainerRegistryR
   role       = aws_iam_role.demo-node.name
 }
 
+resource "aws_launch_configuration" "config" {
+  associate_public_ip_address = true
+  
+  image_id                    = "ami-03b5297d565ef30a6"
+  instance_type               = "t2.micro"
+  key_name                    = "dev"
+  name_prefix                 = "eks-config"
+  
+
+  lifecycle {
+    create_before_destroy = true
+  }
+  root_block_device {
+    delete_on_termination = true
+  }
+}
+
+  root_block_device {
+    delete_on_termination = true
+  }
+}
+
+
 resource "aws_eks_node_group" "demo" {
   cluster_name    = aws_eks_cluster.demo.name
   node_group_name = "demo"
   node_role_arn   = aws_iam_role.demo-node.arn
   subnet_ids      = aws_subnet.demo[*].id
-  key_name        = "dev"
+ # key_name        = "dev"
 
   scaling_config {
     desired_size = 1
@@ -68,5 +91,6 @@ resource "aws_eks_node_group" "demo" {
     aws_iam_role_policy_attachment.demo-node-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.demo-node-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.demo-node-AmazonEC2ContainerRegistryReadOnly,
+    aws_launch_configuration.config,
   ]
 }
