@@ -68,10 +68,6 @@ resource "aws_launch_configuration" "config" {
   }
 }
 
-  root_block_device {
-    delete_on_termination = true
-  }
-}
 
 
 resource "aws_eks_node_group" "demo" {
